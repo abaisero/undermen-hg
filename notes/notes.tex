@@ -92,39 +92,50 @@ algorithm survives the game will receive an \s{I survived} t-shirt.
 
 \subsubsection{Annotation}
 
-\begin{tabular}{|c|l|}
-  \hline
-  Symbol & Meaning \\
-  \hline \hline
-  $A_i$ & Agent i's action. $i = 0$ denotes my agent. \\
-  \hline
-  $R_i$ & Agent i's reputation. Approximates the probability of the opponent Hunting. \\
-  \hline
-  $N$ & number of rounds so far. \\
-  \hline
-  $H_i$ & Number of times agent i has hunted. Calculated as $H_i = \frac{R_i}{N}$. \\
-  \hline
-  $S_i$ & Number of times agent i has slacked. Calculated as $S_i = N - H_i$. \\
-  \hline
-  $W_0(A_0, A_i)$ & Reward function for my agent. First action always indicates
-  my action. \\
-  \hline
-  $W_1(A_0, A_i)$ & Reward function for other agent. First action always indicates
-  my action. \\
-  \hline
-\end{tabular}
+\begin{figure}[h!]
+  \centering
+  \begin{tabular}{|c|l|}
+    \hline
+    Symbol & Meaning \\
+    \hline \hline
+    $T$ & Current number of turn. Starts with $1$. \\
+    \hline
+    $P_t$ & Number of players at turn $t$. \\
+    \hline
+    $R^i$ & Agent $i$'s reputation. In the case of $i = 0$, then one can also
+    index using turn number $R^i_t$. \\
+    \hline
+    $h^i_t$ & Number of hunts the agent $i$ performs at turn $t$. $i = 0$ denotes
+    our agent. \\
+    \hline
+    $H^i_t$ & Number of hunts from the beginning until turn $t$. $H^i_t =
+    \sum_{\tau = 1}^T h^i_\tau$. Also calculated as $H^i = \frac{R^i}{T}$. \\
+    \hline
+    $S^i_t$ & Number of times agent $i$ has slacked from the first turn.
+    Calculated as?. \\
+    \hline
+    $A^i$ & Agent $i$'s action. $i = 0$ denotes my agent. \\
+    \hline
+    $U_0(A_0, A_i)$ & Utility function for my agent. First action always indicates
+    my action. \\
+    \hline
+    $U_1(A_0, A_i)$ & Utility function for other agent. First action always indicates
+    my action. \\
+    \hline
+  \end{tabular}
+\end{figure}
 
 \section{Strategy}
 
 \subsection{Rewards}
 
 \subsubsection{Reward Table}
-The reward table describes the reward functions $W$.
+The reward table describes the reward functions $U$.
 
 \begin{figure}[h!]
   \centering
   \begin{equation*}
-    W =\, 
+    U =\, 
       \begin{tabular}{|c||c|c|}
         \hline
         $A_0$ \textbackslash\ $A_i$ & H & S \\
@@ -143,14 +154,14 @@ Let's try to analyse the expected rewards conditioned on the opponent's
 reputation.
 
 \begin{align*}
-  E[W_0(A_0, A_i) / A_0 = H] &= E[W_0(H, A_i) \\
-                             &= W_0(H, H) R_i + W_0(H, S) (1-R_i)\\
+  E[U_0(A_0, A_i) / A_0 = H] &= E[U_0(H, A_i) \\
+                             &= U_0(H, H) R_i + U_0(H, S) (1-R_i)\\
                              &= 0 R_i + -3 (1-R_i) \\
                              &= -3 + 3 R_i
 \end{align*}
 \begin{align*}
-  E[W_0(A_0, A_i) / A_0 = S] &= E[W_0(S, A_i) \\
-                             &= W_0(S, H) R_i + W_0(S, S) (1-R_i) \\
+  E[U_0(A_0, A_i) / A_0 = S] &= E[U_0(S, A_i) \\
+                             &= U_0(S, H) R_i + U_0(S, S) (1-R_i) \\
                              &= 1 R_i + -2 (1-R_i) \\
                              &= -2 + 3 R_i
 \end{align*}
@@ -163,7 +174,7 @@ uncertainty over our own action. I guess I was trying to model the opponent's
 action depending on our own reputation, but it is badly done in this way. I'll
 keep it just to keep track of all I've thought about, but ignore.}
 \begin{align*}
-  E[W_0(A_0, A_i)] &= E[W_0(A_0, A_i) / A_0 = H] R_0 + E[W_0(A_0, A_i) / A_0 = S] (1-R_0) \\
+  E[U_0(A_0, A_i)] &= E[U_0(A_0, A_i) / A_0 = H] R_0 + E[U_0(A_0, A_i) / A_0 = S] (1-R_0) \\
                    &= (-3 +3 R_i) R_0 + (-2 +3 R_i) (1-R_0) \\
                    &= -2 - R_0 + 3 R_i
 \end{align*}
@@ -229,6 +240,24 @@ player and we have more food than him).}
 
 \subsubsection{What value to aim for?}
 
+This is a very tough question.
+
+Asssuming we would simply want to avoid the opponent to predict our own
+decision, then we would want to maximize the future entropy
+\begin{align*}
+  H_f(R_{f, 0}) &= - R_{f, 0} \log(R_{f, 0}) - (1-R_{f, 0}) \log(1-R_{f, 0})
+\end{align*}
+
+To maximize, we simply aim at having $R_{f, 0} = 0.5$, which is quite
+intuitive considering our goal of avoiding possible predictions by our opponent.
+
+Given the current reputation $R_0$ and the number of total decisions we have to
+make $P_t$, then we can determine $R_{f, 0}$ as a function of the times we are
+going to hunt in the current turn $H_t$.
+\begin{align*}
+  R_{f, 0} = \frac{H+H_t}{H+S+P_t}
+\end{align*}
+
 \subsubsection{How?}
 
 \subsection{Rewards \dash\ reprise}
@@ -238,7 +267,7 @@ opponent's reputation, but ours too, on the ground that both of them affect our
 certainty of what the opponent's action might be.
 
 \begin{align*}
-  E[W_0(A_0, A_i) / R_0, R_i] &= ?
+  E[U_0(A_0, A_i) / R_0, R_i] &= ?
 \end{align*}
 
 \subsection{Public Goods}
@@ -250,10 +279,10 @@ certainty of what the opponent's action might be.
   people help, but the playground benefits everyone equally. Public goods tend
   to increase the chance that people will cooperate.}
 \end{quotation}
-\hfill Training Exercise
+\hfill from \emph{Training Exercise}
 
 How should the public goods in this game influence our actions? I can't find any
-way, by instinct I would just ignore it.. But let's not be rash and think about
+way. By instinct, I would just ignore it.. But let's not be rash and think about
 it a bit more \smiley.
 
 \subsection{Mixes Strategies}
