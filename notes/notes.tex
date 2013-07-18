@@ -1,0 +1,245 @@
+\documentclass[10pt,fleqn]{article}
+
+\input{bais.tex}
+\nosubsubcounter
+
+\title{Notes}
+\author{Andrea Baisero}
+
+\begin{document}
+\maketitle
+
+\section{Rules}
+
+\subsection{Food and Winning}
+
+Each player begins the game with $300(P-1)$ units of food, where $P$ is the
+number of players.
+
+If after any round you have zero food, you will die and no longer be allowed to
+compete. All players who survive until the end of the game will receive the
+survivor's prize.
+
+The game can end in two ways. After a large number of rounds, there will be a
+small chance each additional round that the game ends. Alternatively, if there
+is only one person left with food then the game ends. In each case, the winner
+is the person who has the most food when the game ends.
+
+The game is designed to encourage both cooperation and competition between
+players at different points in the game. Determining the right balance leads to
+a winning strategy.
+
+\subsection{Hunts}
+
+Each round is divided into hunts. A hunt is a game played between you and one
+other player. Each round you will have the opportunity to hunt with every other
+remaining player, so you will have $P-1$ hunts per round, where $P$ is the
+number of remaining players.
+
+In a hunt you can make the decision to hunt (become a hunter) or feign sickness
+and not hunt (become a slacker). Hunting is an active activity, so you will eat
+$6$ units of food if you decide to hunt, and $2$ units of food if you decide not
+to hunt. If both you and your partner do not hunt, then you get $0$ food from
+the hunt. If only one of you decides to hunt then the hunt returns $6$ units of
+food.  If both of you decided to hunt then the hunt returns $12$ units of food.
+The total food return of the hunt is split evenly between you and your partner.
+So, for example, if both of you decide to hunt, your individual net food
+gain/loss from the hunt would be $12/2 - 6=0$ units, whereas if both of you
+decided not to hunt your individual net food gain/loss is $0/2 - 2= -2$ food.
+
+\subsection{Reputation}
+
+Each player has a reputation $R$, which is defined as $R=\frac{H}{H+S}$, where
+$H$ is the number of times you chose to hunt and $S$ is the number of times you
+chose to slack (not hunt), both counted from the beginning of the game. Each
+player begins with a reputation of $0$.
+
+Each round, your tribe can save some time and hunt extra food if enough people
+opt to hunt. Each round, a random integer m, with $0<m<P(P-1)$ will be chosen.
+If the total number of hunters is greater than or equal to m for the upcoming
+round, then everyone in the tribe gets $2(P-1)$ extra units of food after the
+round, which means that on average everyone gets 2 units of food per hunt.
+Before each round, you will find out the value of m.
+
+Before each round you will be given: which number round you are in (from $1$ to
+$\infty$), your food, your reputation, $m$, and an array with the reputation of
+each remaining member of the tribe when the round started. The location of each
+player in the array will be randomized after each round. You should decide your
+moves for that round for each player you will play against, and return an array
+of your decisions. After each hunt you will be given the food earned from each
+hunt you played.
+
+\subsection{Submission guidelines}
+
+The logic of your code and what game theory analyses you apply for the various
+steps must be either laid out as comments in the code or in a separate
+document. The algorithm (and separate document, if any) should be submitted by
+August 8, 2013 through your Brilliant account. Algorithms will be run
+tournament-style to determine the winner. The finalist teams will then have a
+short video interview with Brilliant staff, to verify that their work is their
+own.
+
+Prizes for algorithms eligible for the final game will be awarded at two
+levels:
+
+Grand Prize Winners \dash\ $5$ teams will receive the Grand Prize of \$1000.
+The winning algorithm is guaranteed to receive the Grand Prize. $4$ other winners
+will be selected based on the performance of their algorithm, logic, game
+theory analysis, and presentation.  Finalists \dash\ Members of teams whose
+algorithm survives the game will receive an \s{I survived} t-shirt.
+
+\section{Recap of Rules}
+
+\subsubsection{Annotation}
+
+\begin{tabular}{|c|l|}
+  \hline
+  Symbol & Meaning \\
+  \hline \hline
+  $A_i$ & Agent i's action. $i = 0$ denotes my agent. \\
+  \hline
+  $R_i$ & Agent i's reputation. Approximates the probability of the opponent Hunting. \\
+  \hline
+  $N$ & number of rounds so far. \\
+  \hline
+  $H_i$ & Number of times agent i has hunted. Calculated as $\frac{H_i = R_i}{N}$. \\
+  \hline
+  $S_i$ & Number of times agent i has slacked. Calculated as $S_i = N - H_i$. \\
+  \hline
+  $W_0(A_0, A_i)$ & Reward function for my agent. First action always indicates
+  my action. \\
+  \hline
+  $W_1(A_0, A_i)$ & Reward function for other agent. First action always indicates
+  my action. \\
+  \hline
+\end{tabular}
+
+\section{Strategy}
+
+\subsection{Rewards}
+
+\subsubsection{Reward Table}
+The reward table describes the reward functions $W$.
+
+\begin{figure}[h!]
+  \centering
+  \begin{equation*}
+    W =\, 
+      \begin{tabular}{|c||c|c|}
+        \hline
+        $A_0$ \textbackslash\ $A_i$ & H & S \\
+        \hline\hline
+        H & $0$ \textbackslash\ $0$ & $-3$ \textbackslash\ $+1$ \\
+        \hline
+        S & $+1$ \textbackslash\ $-3$ & $-2$ \textbackslash\ $-2$ \\
+        \hline
+      \end{tabular}
+  \end{equation*}
+\end{figure}
+
+\subsubsection{Expected Rewards}
+
+Let's try to analyse the expected rewards conditioned on the opponent's
+reputation.
+
+\begin{align*}
+  E[W_0(A_0, A_i) / A_0 = H] &= E[W_0(H, A_i) \\
+                             &= W_0(H, H) R_i + W_0(H, S) (1-R_i)\\
+                             &= 0 R_i + -3 (1-R_i) \\
+                             &= -3 + 3 R_i
+\end{align*}
+\begin{align*}
+  E[W_0(A_0, A_i) / A_0 = S] &= E[W_0(S, A_i) \\
+                             &= W_0(S, H) R_i + W_0(S, S) (1-R_i) \\
+                             &= 1 R_i + -2 (1-R_i) \\
+                             &= -2 + 3 R_i
+\end{align*}
+Notice how the second is always higher than the first. This simply confirms that
+locally, the best action is to always Slack.
+
+What if we also model our own action stochastically using our reputation?
+\intodo{Come to think of it, the following is not very useful.. We don't have
+uncertainty over our own action. I guess I was trying to model the opponent's
+action depending on our own reputation, but it is badly done in this way. I'll
+keep it just to keep track of all I've thought about, but ignore.}
+\begin{align*}
+  E[W_0(A_0, A_i)] &= E[W_0(A_0, A_i) / A_0 = H] R_0 + E[W_0(A_0, A_i) / A_0 = S] (1-R_0) \\
+                   &= (-3 +3 R_i) R_0 + (-2 +3 R_i) (1-R_0) \\
+                   &= -2 - R_0 + 3 R_i
+\end{align*}
+This result confirms the following:
+\begin{inlist}
+  \item Whenever we chose to slack rather than hunt, we gain $1$ reward point,
+  \item Whenever the opponent chooses to hunt rather than to clask, we gain $3$
+    reward points.
+\end{inlist}
+
+\subsubsection{Conclusion}
+Choosing a policy which maximises the previous expectation leads to a static
+policy of always slacking, which overall would lead to a consistent loss of 2
+items of food for every turn.
+
+However, we will see that maybe we are not really using all the information we
+have. Up to now, we have assumed that the opponent's action is only dependent on
+his responsibility, but we have left out that his actions in front of \emph{us}
+are very likely to depend on our own responsibility.
+
+The next section will try to analyse why and how our reputation changes our
+opponents' actions, and how to make use of this to increase our expected food
+value.
+
+\subsection{Reputation Balancing}
+
+\subsubsection{Why?}
+
+We have already seen that slacking is the Nash Equilibrium solution, \ie\ the
+local optimum when we try to maximize the expected rewards. Unfortunately, this
+is far from a global optimum: Being this a prisoner dilemma problem, we have
+that both players gain by cooperating, but only if they both cooperate. This is
+the problem we are trying to address.
+
+It is reasonable to assume that \emph{some} players will try to cooperate so
+that they all gain by hunting together. If such a group forms, then I would
+rather be in it than out of it. The intended goal is to avoid being classified
+as a \s{slacker}: If you are a slacker, then everyone will slack against you.
+
+The problem is that there is no means of communication with the community so as
+to organize the up-coming of such a group: The only information we can exchange
+is our reputation. The goal of reputation balancing should be to send a message
+to your opponent: \s{look: you can trust me}.
+
+On the other hand the creation of such a group opens ground for all sorts of
+treason and backstabbing. Confirming yourself as a strong hunter is also not a
+good strategy: If you are a compulsive hunter then other people will assume they
+can slack their way into profit at your expenses. All in all, we just want to
+keep our reputation just high enough for that to the message to pass. We gain
+the maximum when we cooperate just enough to let the message pass. The question
+now is: \emph{what is the threshold?}
+
+One other interesting thing to consider is that the message we pass is only
+effective if there is someone listening on the other end. If we are surrounded
+by compulsive slackers, then there is little we can do but slack
+ourselves\footnote{This is the reason why might want to keep a global reputation
+measure at hand, but more on that later.}.
+
+\intodo{Idea: Would it be a sensible strategy to make our own reputation
+approach the global reputation? Possibly, but not always (\eg\ if we are
+surrounded by strong hunters, or if we are head to head against just one last
+player and we have more food than him).}
+
+\subsubsection{What value to aim for?}
+
+\subsubsection{How?}
+
+\subsection{Rewards \dash\ reprise}
+
+In this section we will try to find maximise or expected gain given not only the
+opponent's reputation, but ours too, on the ground that both of them affect our
+certainty of what the opponent's action might be.
+
+\begin{align*}
+  E[W_0(A_0, A_i) / R_0, R_i] &= ?
+\end{align*}
+
+\end{document}
+

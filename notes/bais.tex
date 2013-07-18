@@ -1,0 +1,101 @@
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{paralist}
+\usepackage{todonotes}
+
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+\usetikzlibrary{arrows}
+
+% TODO complete todo commands..
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Document options
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\nosubsubcounter}{\setcounter{secnumdepth}{2}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Custom commands
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% TikZ
+\newcommand{\inputTikZ}[1]{
+  \input{{#1}.tex}
+}
+
+% Custom TODO commands
+\newcommand{\intodo}[1]{
+  \todo[inline]{{#1}}
+}
+\newcommand{\nytodo}[1][written]{
+  \todo[inline]{Not yet {#1}}
+}
+\newcommand{\todopage}{
+  \ifnum\value{@todonotes@numberoftodonotes}>0
+    \newpage\listoftodos
+  \fi
+}
+
+%%% Environments
+
+% Inline list
+\newenvironment{inlist}
+{\begin{inparaenum}[\itshape a\upshape)]}
+{\end{inparaenum}}
+
+% Example environment, section numbering
+\newtheorem{example}{Example}[section]
+
+%%% Reference commands
+\newcommand{\EX}[1]{Ex.~\ref{ex:#1}}
+\newcommand{\EXAMPLE}[1]{Example~\ref{ex:#1}}
+\newcommand{\EQ}[1]{\eqref{eq:#1}}
+\newcommand{\EQUATION}[1]{Equation~\EQ{#1}}
+
+\newcommand{\SECTION}[1]{Section~\ref{sec:#1}}
+\newcommand{\SEC}[1]{Sec.~\ref{sec:#1}}
+
+\newcommand{\FIG}[1]{Fig.~\ref{fig:#1}}
+\newcommand{\FIGURE}[1]{Figure~\ref{fig:#1}}
+\newcommand{\SUBFIG}[1]{\subref{fig:#1}}
+
+\newcommand{\TABLE}[1]{Table~\ref{tab:#1}}
+
+\newcommand{\ITEM}[1]{(\ref{item:#1})}
+
+%%% Textual modifiers
+\newcommand{\s}[1]{``#1''}
+
+%%% Common texts
+
+\newcommand{\etal}{et al}
+\newcommand{\ie}{i.e.}
+\newcommand{\eg}{e.g.}
+\newcommand{\etc}{etc}
+\newcommand{\etcdots}{\etc\ldots}
+\newcommand{\dash}{--}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Math Environment Common Commands
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Common operators
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\abs}[1]{\left|\,#1\,\right|}
+\newcommand{\dotp}[2]{\langle\,#1,#2\,\rangle}
+
+% Common symbols
+\newcommand{\Rs}{\mathbf{R}}
+\newcommand{\Ss}{\mathcal{S}}
+\newcommand{\Xs}{\mathcal{X}}
+\newcommand{\Ys}{\mathcal{Y}}
+\newcommand{\defeq}{\ensuremath{\mathrel{\stackrel{\mathrm{def}}{=}}}}
+
+% Symbol modifiers
+\newcommand{\vv}[1]{\boldsymbol{#1}}
+\newcommand{\alt}[1]{\tilde{#1}}
+
+% Text in Formula commands
+\newcommand{\st}{\text{ s.t. }}
+
