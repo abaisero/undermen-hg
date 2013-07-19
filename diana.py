@@ -1,31 +1,38 @@
 class Player:
   def __init__(self):
     # time-sequence of data which might be useful
-    self.global_reputation = list()
-    self.num_players = list()
-    self.num_cooperators = list()
+    self.g_rep = list()
+    self.n_players = list()
+    self.n_coops = list()
+    self.actions = list()
+
+    self.u_to_a = dict()
+    self.u_to_a[('h', 0)] = 'h'
+    self.u_to_a[('s', -3)] = 'h'
+    self.u_to_a[('h', 1)] = 's'
+    self.u_to_a[('s', -2)] = 's'
 
   def hunt_choices(self,
                     round_number,
-                    current_food,
-                    current_reputation,
+                    my_food,
+                    my_reputation,
                     m,
-                    player_reputations):
+                    reps):
     """ Called to get our agent's decision on a new round.
 
     round_number:       integer, the number round you are in.
-    current_food:       integer, the amount of food you have.
-    current_reputation: float (python's representation of real numbers), your
+    my_food:            integer, the amount of food you have.
+    my_reputation:      float (python's representation of real numbers), your
                         current reputation.
     m:                  integer, the threshold cooperation value for this round.
-    player_reputations: list of floats, the reputations of all the remaining
+    reps:               list of floats, the reputations of all the remaining
                         players in the game. The ordinal positions of players in
                         this list will be randomized each round.
     """
 
     # update with current data
-    self.num_players.append(len(player_reputations))
-    self.global_reputation.append(calc_global_reputation(player_reputations))
+    self.n_players.append(len(reps))
+    self.g_rep.append(global_rep(reps))
 
     # NB. I just noticed that we are given all the player_reputations all at
     # once.. This allows us to plan for the whole round all together. This
@@ -36,12 +43,14 @@ class Player:
     # maximize the expected gain.
 
     # initial strategy
-    hunt_decisions = [ 's' for r in player_reputations ]
-    return hunt_decisions
+    actions = [ 's' for r in reps ]
 
-  def calc_global_reputation(player_reputations):
+    self.actions.append(actions)
+    return actions
+
+  def global_rep(reps):
     """ Temporary: current global reputation as a mean of the reputations. """
-    return sum(player_reputations)/len(player_reputations)
+    return sum(reps)/len(reps)
 
   def hunt_outcomes(self, food_earnings):
     """ Called after each round is complete.
@@ -52,9 +61,14 @@ class Player:
                         in the same order as the decision in the corresponding
                         hunt_choices.
     """
-    pass
 
-  def round_end(self, award, m, number_cooperators):
+    their_actions = determine_opponent_decisions(food_earnings)
+    # TODO determine how my reputation has influenced their actions
+
+  def determine_opponent_decisions(utilities):
+    return [ self.u_to_a[(x, y)] for x, y in zip(self.actions[-1], utilities) ]
+
+  def round_end(self, award, m, n_cooperators):
     """ Called after each round is complete.
 
     award:              integer, total food bonus (can be zero) you received due
@@ -70,6 +84,6 @@ class Player:
     number_cooperators: integer, how many players chose to cooperate over the
                         last round.
     """
-    self.num_cooperators.append(number_cooperators)
+    self.n_coops.append(n_cooperators)
     pass
 
