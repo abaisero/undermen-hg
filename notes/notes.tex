@@ -89,101 +89,186 @@ theory analysis, and presentation.  Finalists \dash\ Members of teams whose
 algorithm survives the game will receive an \s{I survived} t-shirt.
 
 \section{Recap of Rules}
-
 \subsubsection{Annotation}
 
-\begin{figure}[h!]
-  \centering
-  \begin{tabular}{|c|l|}
-    \hline
-    Symbol & Meaning \\
-    \hline \hline
-    $T$ & Current number of turn. Starts with $1$. \\
-    \hline
-    $P_t$ & Number of players at turn $t$. \\
-    \hline
-    $R^i$ & Agent $i$'s reputation. In the case of $i = 0$, then one can also
-    index using turn number $R^i_t$. \\
-    \hline
-    $h^i_t$ & Number of hunts the agent $i$ performs at turn $t$. $i = 0$ denotes
-    our agent. \\
-    \hline
-    $H^i_t$ & Number of hunts from the beginning until turn $t$. $H^i_t =
-    \sum_{\tau = 1}^T h^i_\tau$. Also calculated as $H^i = \frac{R^i}{T}$. \\
-    \hline
-    $S^i_t$ & Number of times agent $i$ has slacked from the first turn.
-    Calculated as?. \\
-    \hline
-    $A^i$ & Agent $i$'s action. $i = 0$ denotes my agent. \\
-    \hline
-    $U_0(A_0, A_i)$ & Utility function for my agent. First action always indicates
-    my action. \\
-    \hline
-    $U_1(A_0, A_i)$ & Utility function for other agent. First action always indicates
-    my action. \\
-    \hline
-  \end{tabular}
-\end{figure}
+\begin{tabular}{|c|l|}
+  \hline
+  Symbol & Meaning \\
+  \hline \hline
+  $A, A'$ & Actions of my agent and opponent agent respectively. \\
+  \hline
+  $U(A, A'), U(A', A)$ & Utility function for my agent and opponent agent
+  respectively. \\
+  \hline
+  $T$ & Current number of turn. Starts with $1$. \\
+  \hline
+  $p_t$ & Number of players/rounds at turn $t$. \\
+  \hline
+  $P_t$ & Number of total players/rounds until turn $t$, excluded. \\
+  \hline
+  $h_t, s_t$ & Number of hunts/slacks (respectively) my agent performs at turn
+  $t$. \\
+  \hline
+  $H_t, S_t$ & Number of total hunts/slacks (respectively) until turn $t$
+  excluded. \\
+  \hline
+  $R_t, R'$ & My reputation (at turn $t$) and the opponent's reputation
+  respectively. \\
+  \hline
+  $pc, pc'$ & Probability of us and opponent cooperating. \\
+  \hline
+\end{tabular}
+
+\subsubsection{Some Relationships}
+\begin{align*}
+  P_t &= P_{t-1} + p_{t-1} = \sum_{\tau = 1}^{t} p_\tau \\
+  H_t &= H_{t-1} + h_{t-1} = \sum_{\tau = 1}^{t} h_\tau \\
+  S_t &= S_{t-1} + s_{t-1} = \sum_{\tau = 1}^{t} s_\tau \\
+  P_t &= H_t + S_t \\
+  p_t &= h_t + s_t \\
+  R_t &= \frac{H_t}{P_t} \\
+  \intertext{The next one is important for reputation balancing ($h_t$ would be
+  our control variable),} \\
+  R_{t+1} &= \frac{H_{t+1}}{P_{t+1}} \\
+          &= \frac{H_t+h_t}{P_t+p_t} \\
+          &= \frac{R_t}{R_t} \frac{H_t+h_t}{P_t+p_t} \\
+          &= R_t \frac{P_t (H_t+h_t)}{H_t (P_t+p_t)} \\
+          &= R_t \frac{P_t}{P_t + p_t} \frac{H_t + h_t}{H_t} \\
+          &= R_t \frac{P_t}{P_t + p_t} + R_t \frac{P_t}{P_t + p_t} \frac{h_t}{H_t}
+\end{align*}
 
 \section{Strategy}
 
-\subsection{Rewards}
+\subsection{Mixes Strategies}
+\emph{Should we make deterministic decisions?}
 
-\subsubsection{Reward Table}
-The reward table describes the reward functions $U$.
+Without loss of generality, we should probably start working directly using
+mixed strategies, where we assign a probability of cooperation to both our agent
+and the opponent's.
 
-\begin{figure}[h!]
-  \centering
-  \begin{equation*}
-    U =\, 
-      \begin{tabular}{|c||c|c|}
-        \hline
-        $A_0$ \textbackslash\ $A_i$ & H & S \\
-        \hline\hline
-        H & $0$ \textbackslash\ $0$ & $-3$ \textbackslash\ $+1$ \\
-        \hline
-        S & $+1$ \textbackslash\ $-3$ & $-2$ \textbackslash\ $-2$ \\
-        \hline
-      \end{tabular}
-  \end{equation*}
-\end{figure}
+\subsection{Opponent strategy}
 
-\subsubsection{Expected Rewards}
+A naive idea is to have the opponent's probability of cooperation approximated
+as his own reputation, \ie\ $pc' \approx R'$. This is very simple, but
+unfortunately it is also too suboptimal. If we take this assumption, then the
+optimal strategy becomes to always deflect.
 
-Let's try to analyse the expected rewards conditioned on the opponent's
-reputation.
+More generally, we should aim at modelling his probability of cooperation as a
+function of not only his reputation, but also mine, \ie\ $pc' \approx f(R',
+R_t)$.
+
+\subsection{Utilities}
+
+\subsubsection{Utility Table}
+\begin{equation*}
+  U =\, 
+    \begin{tabular}{|c||c|c|}
+      \hline
+      $A$ \textbackslash\ $A'$ & H & S \\
+      \hline\hline
+      H & $0$ \textbackslash\ $0$ & $-3$ \textbackslash\ $+1$ \\
+      \hline
+      S & $+1$ \textbackslash\ $-3$ & $-2$ \textbackslash\ $-2$ \\
+      \hline
+    \end{tabular}
+\end{equation*}
+
+\subsubsection{Expected Utility}
+
+Let's try to analyze our expected utilities, taking the naive approximation of
+$pc'$.
 
 \begin{align*}
-  E[U_0(A_0, A_i) / A_0 = H] &= E[U_0(H, A_i) \\
-                             &= U_0(H, H) R_i + U_0(H, S) (1-R_i)\\
-                             &= 0 R_i + -3 (1-R_i) \\
-                             &= -3 + 3 R_i
+  E[U(A, A') / A = H] &= E[U(H, A')] \\
+                      &= U(H, H) pc' + U(H, S) (1-pc')\\
+                      &= 0 pc' + -3 (1-pc') \\
+                      &= -3 + 3 pc'
 \end{align*}
 \begin{align*}
-  E[U_0(A_0, A_i) / A_0 = S] &= E[U_0(S, A_i) \\
-                             &= U_0(S, H) R_i + U_0(S, S) (1-R_i) \\
-                             &= 1 R_i + -2 (1-R_i) \\
-                             &= -2 + 3 R_i
+  E[U(A, A') / A = S] &= E[U(S, A')] \\
+                      &= U(S, H) pc' + U(S, S) (1-pc') \\
+                      &= 1 pc' + -2 (1-pc') \\
+                      &= -2 + 3 pc'
 \end{align*}
 Notice how the second is always higher than the first. This simply confirms that
-locally, the best action is to always Slack.
+in the non-iterated prisoner's dilemma (or in the case we assume the opponent
+doesn't base his strategy on our own reputation) the best strategy is always to
+slack.
 
-What if we also model our own action stochastically using our reputation?
-\intodo{Come to think of it, the following is not very useful.. We don't have
-uncertainty over our own action. I guess I was trying to model the opponent's
-action depending on our own reputation, but it is badly done in this way. I'll
-keep it just to keep track of all I've thought about, but ignore.}
-\begin{align*}
-  E[U_0(A_0, A_i)] &= E[U_0(A_0, A_i) / A_0 = H] R_0 + E[U_0(A_0, A_i) / A_0 = S] (1-R_0) \\
-                   &= (-3 +3 R_i) R_0 + (-2 +3 R_i) (1-R_0) \\
-                   &= -2 - R_0 + 3 R_i
-\end{align*}
-This result confirms the following:
+When (if) we manage to model $pc'$ also as a function of our own reputation, we
+might try this approach again..
+
+\subsection{Relative interpretation of Utilities}
+\emph{When is it worth it to risk by cooperating?}
+
+It can be argued that it is mostly unimportant exactly how much we win or lose
+in absolute terms, but rather it is important only how much we win or lose \wrt\
+all the other possible outcomes.
+
+This is pragmatically true only as long as we can avoid having very low stacks
+of food, in which the importance of considering the absolute terms arises.
+Consider, in the game at hand, that your action may change the outcomes either
+from $1$ to $-2$ or from $0$ to $-3$. In both cases, the relative change is
+always $-3$, and as such the analysis is simplified. However, if you actually do
+have few items of food left, then the difference between the absolute terms
+actually starts to gain importance. However, I find two reasons why this can be
+largely ignored:
 \begin{inlist}
-  \item Whenever we chose to slack rather than hunt, we gain $1$ reward point,
-  \item Whenever the opponent chooses to hunt rather than to clask, we gain $3$
-    reward points.
+  \item If you have so few items of food left, you are practically already
+  doomed. You will die inevitably unless you find a very long streak of
+  collaborators in front of you, a very unlikely event. Even so, you will only
+  either stay at the same food level (if you collaborate with them), or gain $1$
+  very puny food item, at the cost of decreasing your reputation for each puny
+  gain.
+  \item The game starts with a food stack in an order of magnitude which I
+  estimate to be between $10^4$ and $10^6$. As such, the absolute difference of
+  $1$ between the outcomes is largely ignorable.
+  \item More importantly, if we ever do get at such low levels of food, it means
+  that our strategy was a losing one to start with, and that can not be
+  attributed to the change of P.O.V from absolutist to relativist utility
+  interpretations.
 \end{inlist}
+
+So let's assume that we are only interested in a relative interpretation of
+utilities. As such, the game's utilities can be translated as:
+\begin{itemize}
+  \item For each turn, we lose $2$ items of food consistently. This is the term
+  which can be pragmatically ignored.
+  \item We lose $1$ extra item of food per session if we choose to cooperate.
+  \item We gain $3$ items of food per session if our opponent chooses to
+  cooperate.
+\end{itemize}
+
+In a table representation, the relativist P.O.V of utility simply means that we
+can adjust all the utilities by adding/subtracting a constant:
+\begin{equation*}
+  U =\, 
+    \begin{tabular}{|c||c|c|}
+      \hline
+      $A$ \textbackslash\ $A'$ & H & S \\
+      \hline\hline
+      H & $+2$ \textbackslash\ $+2$ & $-1$ \textbackslash\ $+3$ \\
+      \hline
+      S & $+3$ \textbackslash\ $-1$ & $0$ \textbackslash\ $0$ \\
+      \hline
+    \end{tabular}
+\end{equation*}
+
+It is thus easy to postulate that any agent should only be interested in
+adopting strategies which include cooperation component if and only if these
+allow the agent to receive at least $1$ cooperation for every $3$ which he gives
+away. This aspect is fundamentally true, and should be included in the final
+strategy.
+
+If we port this in the framework of mixed strategies, then we can say that an
+agent should adopt cooperation-inclusive strategies if and only if the
+probability of receiving cooperation is at least one third of the probability of
+giving out cooperation.
+\intodo{Is this correct? Not sure.. Think more about it.}
+
+If these guidelines are not guaranteed, then the agent performs best to simply
+avoid all sorts of cooperation at all.
+
 
 \subsubsection{Conclusion}
 Choosing a policy which maximises the previous expectation leads to a static
@@ -200,14 +285,13 @@ opponents' actions, and how to make use of this to increase our expected food
 value.
 
 \subsection{Reputation Balancing}
-
-\subsubsection{Why?}
+\emph{Why?}
 
 We have already seen that slacking is the Nash Equilibrium solution, \ie\ the
-local optimum when we try to maximize the expected rewards. Unfortunately, this
-is far from a global optimum: Being this a prisoner dilemma problem, we have
-that both players gain by cooperating, but only if they both cooperate. This is
-the problem we are trying to address.
+local optimum when we try to maximize the expected utilities. Unfortunately,
+this is far from a global optimum: Being this a prisoner dilemma problem, we
+have that both players gain by cooperating, but only if they both cooperate.
+This is the problem we are trying to address.
 
 It is reasonable to assume that \emph{some} players will try to cooperate so
 that they all gain by hunting together. If such a group forms, then I would
@@ -233,44 +317,37 @@ by compulsive slackers, then there is little we can do but slack
 ourselves\footnote{This is the reason why might want to keep a global reputation
 measure at hand, but more on that later.}.
 
-\intodo{Idea: Would it be a sensible strategy to make our own reputation
-approach the global reputation? Possibly, but not always (\eg\ if we are
-surrounded by strong hunters, or if we are head to head against just one last
-player and we have more food than him).}
-
 \subsubsection{What value to aim for?}
 
 This is a very tough question.
 
-Asssuming we would simply want to avoid the opponent to predict our own
+Assuming we would simply want to avoid the opponent to predict our own
 decision, then we would want to maximize the future entropy
 \begin{align*}
-  H_f(R_{f, 0}) &= - R_{f, 0} \log(R_{f, 0}) - (1-R_{f, 0}) \log(1-R_{f, 0})
+  H^{entropy}(R_{t+1}) &= - R_{t+1} \log(R_{t+1}) - (1-R_{t+1}) \log(1-R_{t+1})
 \end{align*}
 
-To maximize, we simply aim at having $R_{f, 0} = 0.5$, which is quite
-intuitive considering our goal of avoiding possible predictions by our opponent.
+To maximize, we simply aim at having $R_{t+1} = 0.5$, which is quite intuitive
+considering our goal of avoiding possible predictions by our opponent.
 
-Given the current reputation $R_0$ and the number of total decisions we have to
-make $P_t$, then we can determine $R_{f, 0}$ as a function of the times we are
-going to hunt in the current turn $H_t$.
-\begin{align*}
-  R_{f, 0} = \frac{H+H_t}{H+S+P_t}
-\end{align*}
+However, there's still problems with this approach:
+\begin{inlist}
+  \item We are only maximizing entropy under the assumption that your opponent
+  takes your reputation as a naive approximation of your probability of
+  cooperating.
+  \item What are exactly the advantages of maximizing your opponent's entropy?
+  This is not poker, if two people want to cooperate it is not enough to come
+  out as a guy who might back-stab you $50\%$ of the times. I strongly suspect
+  that the value of reputation we should aim for is higher than $.5$.
+\end{inlist}
 
 \subsubsection{How?}
 
-\subsection{Rewards \dash\ reprise}
-
-In this section we will try to find maximise our expected gain given not only the
-opponent's reputation, but ours too, on the ground that both of them affect our
-certainty of what the opponent's action might be.
-
-\begin{align*}
-  E[U_0(A_0, A_i) / R_0, R_i] &= ?
-\end{align*}
+This highly depends on what the relationship is.
 
 \subsection{Public Goods}
+\emph{Are Public Goods good or bad?}
+
 \begin{quotation}
   \s{In many realistic situations there are benefits to cooperation that accrue
   to all players, but only if a certain number of players cooperate. These
@@ -281,22 +358,43 @@ certainty of what the opponent's action might be.
 \end{quotation}
 \hfill from \emph{Training Exercise}
 
-How should the public goods in this game influence our actions? I can't find any
-way. By instinct, I would just ignore it.. But let's not be rash and think about
-it a bit more \smiley.
+The only serious observation I can make regarding the issue of public goods is
+that rich people don't want to achieve public goods, whereas poor people do. The
+reason is simple: Public goods affect everyone positively. As such, rich people
+would be losing their dominance against poorer people, and the other way round.
+For example, consider the difference between two players who have $100$ and $5$
+respectively and who have $900$ and $805$ respectively. In the former case, the
+richer guy is dominating; in the latter, the dominance is daft.
 
-\subsection{Mixes Strategies}
+\subsection{TODO}
+\emph{What is missing?}
 
-Another very interesting topic is that of mixed strategies, \ie\ stochastic
-strategies in which instead of choosing an action, you chose what probability you
-assign to each action, and then execute the action stochastically.
+The most crucial thing which is still missing is how to model how our reputation
+influences the opponent's chance of cooperation..
 
-\subsection{Final Strategy}
+\section{Final Strategy}
 
-So how should one frame the decision-making?
+Given the above considerations, the idea seems to arise that the only important
+thing to decide at each turn is $h_t$. Given the relativist P.O.V of utility, it
+doesn't matter exactly with \emph{who} we collaborate or not, but only \emph{how
+many times} we do. This is enforced and assured also by the fact that our
+opponents can not identify us, and never even receive information about which
+action ours was.
+
+Thus the idea of the final algorithm is the following:
 \begin{itemize}
-  \item As a regression problem?
-  \item As an optimization problem?
+  \item Determine what kind of reputation maximizes the number of collaborations
+  you receive, and determine if that kind of reputation is too expensive to get
+  (more than 3 of your collaborations to get 1 of theirs).
+  \item Determine how many collaborations you need to give out to achieve that
+  reputation.
+  \item Scatter the collaborations across the opponents. There is only one
+  aspect \wrt\ which it does matter to who you do or you do not collaborate: Try
+  to reward the slackers rather than the hunters, because the (successful)
+  hunters are likely to already have more food than the slackers. To
+  successfully undermine the opposition, only give advantage to who doesn't pose
+  a threat\footnote{Funny observation: If too many people reason like me,
+  then the slackers would totally win.}.
 \end{itemize}
 
 \end{document}
