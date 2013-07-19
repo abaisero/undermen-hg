@@ -119,6 +119,11 @@ algorithm survives the game will receive an \s{I survived} t-shirt.
   \hline
 \end{tabular}
 
+\intodo{FER: Why are there two elements players/rounds associated with one
+variable $p_t$ (or $P_t$)? I understand that the number of players is not the
+same as the number of rounds. The game is divided in rounds, and during each
+round each player participates in P-1 hunts.}
+
 \subsubsection{Some Relationships}
 \begin{align*}
   P_t &= P_{t-1} + p_{t-1} = \sum_{\tau = 1}^{t} p_\tau \\
@@ -137,6 +142,9 @@ algorithm survives the game will receive an \s{I survived} t-shirt.
           &= R_t \frac{P_t}{P_t + p_t} + R_t \frac{P_t}{P_t + p_t} \frac{h_t}{H_t}
 \end{align*}
 
+\intodo{FER: Is it possible that the first sum is until $\tau=t-1$? If so, it may
+apply for the others as well.}
+
 \section{Strategy}
 
 \subsection{Mixes Strategies}
@@ -145,6 +153,8 @@ algorithm survives the game will receive an \s{I survived} t-shirt.
 Without loss of generality, we should probably start working directly using
 mixed strategies, where we assign a probability of cooperation to both our agent
 and the opponent's.
+
+\intodo{FER: This is a good idea, I agree with it completely for the moment.}
 
 \subsection{Opponent strategy}
 
@@ -381,6 +391,9 @@ many times} we do. This is enforced and assured also by the fact that our
 opponents can not identify us, and never even receive information about which
 action ours was.
 
+\intodo{FER: You actually get to know the rewards of each of the hunts you have
+participated in, thus the actions of the opponents.}
+
 Thus the idea of the final algorithm is the following:
 \begin{itemize}
   \item Determine what kind of reputation maximizes the number of collaborations
@@ -396,6 +409,15 @@ Thus the idea of the final algorithm is the following:
   a threat\footnote{Funny observation: If too many people reason like me,
   then the slackers would totally win.}.
 \end{itemize}
+
+\intodo{FER: I am not sure about the last point. I believe that the presence of
+slackers would tend to make more players slackers. Too many slackers is not
+something good, every player gradually loses food in that situation. In order to
+avoid this scenario, at the beginning the player tries to gain reputation, ensuring
+some level of cooperation (hunt/hunt) among the players. Once this is achieved, the
+focus can be turned into keeping the reputation within an uncertain range (opponents
+do not clearly distinguish us as slackers or hunters), while keeping high the level
+of food (very vague how).}
 
 \end{document}
 
