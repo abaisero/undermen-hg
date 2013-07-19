@@ -1,11 +1,19 @@
 class Player:
   def __init__(self):
-    # time-sequence of data which might be useful
+
+    # global reputation indexed by time
     self.g_rep = list()
+
+    # number of players indexed by time
     self.n_players = list()
+
+    # number of cooperations indexed by time
     self.n_coops = list()
+
+    # actions I have issued indexed by time
     self.actions = list()
 
+    # mapping from (my action, utility) -> opponent action
     self.u_to_a = dict()
     self.u_to_a[('h', 0)] = 'h'
     self.u_to_a[('s', -3)] = 'h'
