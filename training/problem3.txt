@@ -1,0 +1,30 @@
+1/2 |   H   |   D  |
+-------------------
+h   | -3,-3 |  6,0 |
+-------------------
+d   |  0,6  |  3,3 |
+-------------------
+
+Player 1 plays h with probability \alpha and
+d with probability (1-\alpha).
+
+Player 2 plays H with probability \beta and D
+with probability (1-\beta).
+
+Player 1 plays h and d with some probability, and
+has to be indifferent between them. In other words,
+the expected payoffs from the two moves must be
+equal:
+
+The payoffs for player 1 playing h are -3 and 6.
+The payoffs for player 1 playing d are 0 and 3.
+
+-3*\beta + 6*(1-\beta) = 0*\beta + 3*(1-\beta)
+-3\beta + 6 - 6\beta = 3 -3\beta	
+3 = 6\beta <==> \beta=0.5.
+
+The same for player 2:
+
+-3*\alpha + 6*(1-\alpha) = 0*\alpha + 3*(1-\alpha)
+It is the same equation as above,
+\alpha=0.5
