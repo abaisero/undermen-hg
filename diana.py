@@ -56,6 +56,7 @@ class Player:
     self.actions.append(actions)
     return actions
 
+  # TODO modify
   def global_rep(reps):
     """ Temporary: current global reputation as a mean of the reputations. """
     return sum(reps)/len(reps)

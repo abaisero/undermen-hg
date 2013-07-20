@@ -89,6 +89,16 @@ theory analysis, and presentation.  Finalists \dash\ Members of teams whose
 algorithm survives the game will receive an \s{I survived} t-shirt.
 
 \section{Recap of Rules}
+
+\subsubsection{Terminology}
+\begin{itemize}
+  \item \emph{slot} \dash\ One single hunting session with one single opponent.
+  \item \emph{round} \dash\ A collection of hunting sessions, each with a
+    different opponent.
+  \item \emph{m-award} \dash\ The award everyone gets when enough people
+    cooperate.
+\end{itemize}
+
 \subsubsection{Annotation}
 
 \begin{tabular}{|c|l|}
@@ -100,35 +110,43 @@ algorithm survives the game will receive an \s{I survived} t-shirt.
   $U(A, A'), U(A', A)$ & Utility function for my agent and opponent agent
   respectively. \\
   \hline
-  $T$ & Current number of turn. Starts with $1$. \\
+  $T$ & Current number of rounds. Starts with $1$. \\
   \hline
-  $p_t$ & Number of players/rounds at turn $t$. \\
+  $p_t$ & Number of slots at round $t$. \\
   \hline
-  $P_t$ & Number of total players/rounds until turn $t$, excluded. \\
+  $P_t$ & Number of total slots from time $1$ until round $t$ excluded. \\
   \hline
-  $h_t, s_t$ & Number of hunts/slacks (respectively) my agent performs at turn
+  $h_t, s_t$ & Number of hunts/slacks (respectively) my agent performs at round
   $t$. \\
   \hline
-  $H_t, S_t$ & Number of total hunts/slacks (respectively) until turn $t$
-  excluded. \\
+  $H_t, S_t$ & Number of total hunts/slacks (respectively) from round $1$ until
+  round $t$ excluded. \\
   \hline
-  $R_t, R'$ & My reputation (at turn $t$) and the opponent's reputation
+  $R_t, R'$ & My reputation (at round $t$) and the opponent's reputation
   respectively. \\
   \hline
-  $pc, pc'$ & Probability of us and opponent cooperating. \\
+  $pc, pc'$ & Probability of my agent and opponent agent cooperating
+  respectively. \\
   \hline
 \end{tabular}
 
 \intodo{FER: Why are there two elements players/rounds associated with one
 variable $p_t$ (or $P_t$)? I understand that the number of players is not the
 same as the number of rounds. The game is divided in rounds, and during each
-round each player participates in P-1 hunts.}
+round each player participates in P-1 hunts.
+
+BAIS: I probably didn't write that clear enough, I tried rephrasing it.
+Basically $p_t$ represents the number of slots in one specific round, while
+$P_t$ sums up all the slots that have happened in the previous rounds. $P_t$
+allows us to determine exactly how many ways an opponent has hunted or slacked,
+given his reputation (not sure if this is helpful), but even better, it gives a
+measure of how many players are dying at each round.}
 
 \subsubsection{Some Relationships}
 \begin{align*}
-  P_t &= P_{t-1} + p_{t-1} = \sum_{\tau = 1}^{t} p_\tau \\
-  H_t &= H_{t-1} + h_{t-1} = \sum_{\tau = 1}^{t} h_\tau \\
-  S_t &= S_{t-1} + s_{t-1} = \sum_{\tau = 1}^{t} s_\tau \\
+  P_t &= P_{t-1} + p_{t-1} = \sum_{\tau = 1}^{t-1} p_\tau \\
+  H_t &= H_{t-1} + h_{t-1} = \sum_{\tau = 1}^{t-1} h_\tau \\
+  S_t &= S_{t-1} + s_{t-1} = \sum_{\tau = 1}^{t-1} s_\tau \\
   P_t &= H_t + S_t \\
   p_t &= h_t + s_t \\
   R_t &= \frac{H_t}{P_t} \\
@@ -143,7 +161,9 @@ round each player participates in P-1 hunts.}
 \end{align*}
 
 \intodo{FER: Is it possible that the first sum is until $\tau=t-1$? If so, it may
-apply for the others as well.}
+apply for the others as well.
+
+BAIS: Yes, you are right.. I fixed it.}
 
 \section{Strategy}
 
@@ -154,7 +174,12 @@ Without loss of generality, we should probably start working directly using
 mixed strategies, where we assign a probability of cooperation to both our agent
 and the opponent's.
 
-\intodo{FER: This is a good idea, I agree with it completely for the moment.}
+\intodo{FER: This is a good idea, I agree with it completely for the moment.
+
+BAIS: Although, to say the truth I am coming to believe that there is really no
+reason to include stochasticity in our own actions, given that people will
+hardly build a profile on us.. This connects with the fact that it doesn't
+matter with whom we hunt or slack, but only how many times we do so..}
 
 \subsection{Opponent strategy}
 
@@ -242,7 +267,7 @@ largely ignored:
 So let's assume that we are only interested in a relative interpretation of
 utilities. As such, the game's utilities can be translated as:
 \begin{itemize}
-  \item For each turn, we lose $2$ items of food consistently. This is the term
+  \item For each round, we lose $2$ items of food consistently. This is the term
   which can be pragmatically ignored.
   \item We lose $1$ extra item of food per session if we choose to cooperate.
   \item We gain $3$ items of food per session if our opponent chooses to
@@ -274,7 +299,8 @@ If we port this in the framework of mixed strategies, then we can say that an
 agent should adopt cooperation-inclusive strategies if and only if the
 probability of receiving cooperation is at least one third of the probability of
 giving out cooperation.
-\intodo{Is this correct? Not sure.. Think more about it.}
+\intodo{Is this correct? Not sure.. Think more about it. UPDATE: pretty sure
+it's not.}
 
 If these guidelines are not guaranteed, then the agent performs best to simply
 avoid all sorts of cooperation at all.
@@ -283,7 +309,7 @@ avoid all sorts of cooperation at all.
 \subsubsection{Conclusion}
 Choosing a policy which maximises the previous expectation leads to a static
 policy of always slacking, which overall would lead to a consistent loss of 2
-items of food for every turn.
+items of food for every round.
 
 However, we will see that maybe we are not really using all the information we
 have. Up to now, we have assumed that the opponent's action is only dependent on
@@ -385,14 +411,18 @@ influences the opponent's chance of cooperation..
 \section{Final Strategy}
 
 Given the above considerations, the idea seems to arise that the only important
-thing to decide at each turn is $h_t$. Given the relativist P.O.V of utility, it
+thing to decide at each round is $h_t$. Given the relativist P.O.V of utility, it
 doesn't matter exactly with \emph{who} we collaborate or not, but only \emph{how
 many times} we do. This is enforced and assured also by the fact that our
 opponents can not identify us, and never even receive information about which
 action ours was.
-
 \intodo{FER: You actually get to know the rewards of each of the hunts you have
-participated in, thus the actions of the opponents.}
+participated in, thus the actions of the opponents.
+
+BAIS: Yes indeed. They do get to know which action we chose in any specific
+turn, however profiling remains virtually impossible because of the player
+shuffling, unless the number of players reduces to $100$ or less, which I doubt
+it will, given the presence of m-award.}
 
 Thus the idea of the final algorithm is the following:
 \begin{itemize}
@@ -407,7 +437,8 @@ Thus the idea of the final algorithm is the following:
   hunters are likely to already have more food than the slackers. To
   successfully undermine the opposition, only give advantage to who doesn't pose
   a threat\footnote{Funny observation: If too many people reason like me,
-  then the slackers would totally win.}.
+  then the slackers would totally win. However, I doubt that will be the
+  case for a couple reasons..}.
 \end{itemize}
 
 \intodo{FER: I am not sure about the last point. I believe that the presence of
@@ -417,7 +448,10 @@ avoid this scenario, at the beginning the player tries to gain reputation, ensur
 some level of cooperation (hunt/hunt) among the players. Once this is achieved, the
 focus can be turned into keeping the reputation within an uncertain range (opponents
 do not clearly distinguish us as slackers or hunters), while keeping high the level
-of food (very vague how).}
+of food (very vague how).
+
+BAIS: We better speak about this more directly.. I would have too many things to
+write on this alone \smiley}
 
 \end{document}
 
