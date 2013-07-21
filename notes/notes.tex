@@ -102,34 +102,34 @@ algorithm survives the game will receive an \s{I survived} t-shirt.
 
 \subsubsection{Annotation}
 
-\begin{tabular}{|c|l|}
-  \hline
+\begin{tabular*}{\textwidth}{cl}
+  \toprule
   Symbol & Meaning \\
-  \hline \hline
+  \midrule
   $A, A'$ & Actions of my agent and opponent agent respectively. \\
-  \hline
+  \midrule
   $U(A, A'), U(A', A)$ & Utility function for my agent and opponent agent
   respectively. \\
-  \hline
+  \midrule
   $T$ & Current number of rounds. Starts with $1$. \\
-  \hline
+  \midrule
   $p_t$ & Number of slots at round $t$. \\
-  \hline
+  \midrule
   $P_t$ & Number of total slots from time $1$ until round $t$ excluded. \\
-  \hline
+  \midrule
   $h_t, s_t$ & Number of hunts/slacks (respectively) my agent performs at round
   $t$. \\
-  \hline
+  \midrule
   $H_t, S_t$ & Number of total hunts/slacks (respectively) from round $1$ until
   round $t$ excluded. \\
-  \hline
+  \midrule
   $R_t, R'$ & My reputation (at round $t$) and the opponent's reputation
   respectively. \\
-  \hline
+  \midrule\
   $pc, pc'$ & Probability of my agent and opponent agent cooperating
   respectively. \\
-  \hline
-\end{tabular}
+  \bottomrule\
+\end{tabular*}
 
 \intodo{FER: Why are there two elements players/rounds associated with one
 variable $p_t$ (or $P_t$)? I understand that the number of players is not the
@@ -475,21 +475,58 @@ of the optimal strategy. Different assumptions will lead straightforwardly
 towards different strategies, so I think we should formulate them in parallel.
 
 Some of the assumptions one might formulate are the following:
-\begin{itemize}
-  \item There will always be more than 100\dash500 players. \hfill \\
-  We can assume that (or not) depending on how we value the m-award to be
-  important for the survival of many people.
-  \item No-one is able to track agent identities. \hfill \\
-  Probably builds on top of the previous assumption: If there are few players
-  left, then it is a way to track identities.
-  \item Some assumption on the opponents' strategies. \hfill \\
-  This will lead to an optimal reputation balance we should aim for.
-  \item Many players will not recognize the relativistic nature of utilities. \hfill \\
-  There's many smart people out there, but it is in fact hard to estimate
-  whether this can or not be a reasonable assumption.
-  \item People would rather cooperate with hunters/slackers. \hfill \\
-  Very much related with the previous point.
-\end{itemize}
+
+\begin{tabular}{ccp{.65\textwidth}}
+  \toprule\
+  Code & Requisites & {\bfseries Assumption.} Reason \\
+  \midrule\
+  A & \dash\ & {\bfseries It is better to only slack.} After all, slacking is
+  the local optimal in one single round. Obsolete. \\
+  \midrule\
+  B & $\lnot$A & {\bfseries It is better to collaborate sometimes.} if that
+  convinces other players to collaborate with you. \\
+  \midrule\
+  C & \dash\ & {\bfseries Most of the community will try to punish slackers.} \\
+  \midrule\
+  D & \dash\ & {\bfseries There will always be more than 100 players.} We can
+  assume that (or not) depending on how we value the m-award to be important for
+  the survival of many people. \\
+  \midrule\
+  E & D & {\bfseries No-one is able to track agent identities.} Reasonable
+  unless there are few players ($<100$) left. \\
+  \midrule\
+  F & E & {\bfseries Out opponent bases his decision only depending on his, mine,
+  and the global reputation.} These three parameters are the only source of info
+  left on other players. \\
+  \midrule\
+  G & \dash\ & {\bfseries Relativistic nature of utilities.} emerges naturally.
+  Implies that we lose 1 point for each hunt we do, and gain 3 points for each
+  hunt our opponent does. \\
+  \midrule\
+  H & G & {\bfseries It is better to only slack (PART 2) if you receive less
+  than 1 collaboration for each 3 that you give.} \\
+  \midrule\
+  I & \dash\ & {\bfseries Many players will not recognize G.} Hard to justify or
+  negate. \\
+  \midrule\
+  J & G & {\bfseries The main (only) strategic decision to make is how many
+  times to hunt.} If you only consider the goal of maximizing your own income.
+  \\
+  \midrule\
+  K & C, E & {\bfseries It is better to slack against a hunter and to hunt
+  with slackers.} If C and E are true, then we might as well decide to slack
+  (\ie\ penalize) the hunters (the strong competition) and hunt (\ie\ promote)
+  the slackers (the weak competition) rather than the other way round. \\
+  \midrule\
+  L & \dash\ & {\bfseries It is better to always slack (PART 3) if enough people
+  understand J and agree on K.} Because slacking will be enforced anyway rather
+  than punished. \\
+  \midrule\
+  M & \dash\ & {\bfseries Tit-for-tat can be applied here too!} Niiiice! But
+  what does it imply? It probably equates to maintaining your reputation equal
+  to some measure of global reputation. \\
+  \bottomrule\
+\end{tabular}
 
 \end{document}
 
