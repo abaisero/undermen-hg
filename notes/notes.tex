@@ -404,6 +404,50 @@ For example, consider the difference between two players who have $100$ and $5$
 respectively and who have $900$ and $805$ respectively. In the former case, the
 richer guy is dominating; in the latter, the dominance is daft.
 
+\subsection{Tit-for-tat}
+\emph{What is it? Can it be applied?}
+
+\begin{quotation}
+Axelrod discovered that when these encounters were repeated over a long period
+of time with many players, each with different strategies, greedy strategies
+tended to do very poorly in the long run while more altruistic strategies did
+better, as judged purely by self-interest. He used this to show a possible
+mechanism for the evolution of altruistic behaviour from mechanisms that are
+initially purely selfish, by natural selection.
+
+The winning deterministic strategy was tit for tat, which Anatol Rapoport
+developed and entered into the tournament. It was the simplest of any program
+entered, containing only four lines of BASIC, and won the contest. The strategy
+is simply to cooperate on the first iteration of the game; after that, the
+player does what his or her opponent did on the previous move. Depending on the
+situation, a slightly better strategy can be "tit for tat with forgiveness."
+When the opponent defects, on the next move, the player sometimes cooperates
+anyway, with a small probability (around 1–5%). This allows for occasional
+recovery from getting trapped in a cycle of defections. The exact probability
+depends on the line-up of opponents.
+\end{quotation}
+\hfill from \emph{Wikipedia}
+
+The tit-for-tat is a strategy in this you start out by being nice (\ie\
+cooperating), and after that you \s{repay} the opponent with whatever the same
+action he has used against you. Practically, \s{an eye for an eye}. Classically,
+this requires you to know how your opponent has acted against you, so that you
+can repay you. In this instance of the game we can not identify users between
+successive rounds, and so it is impossible to repay each exact opponent with his
+own action. However, we can still actuate a \s{tit for tat} in which we just
+\s{repay} different people with the same actions we were dealt in the previous
+turn. Basically, this simply gives us a guideline of how many hunts/slacks to
+deal in the next turn given the ones we have received in the previous turn.
+
+\subsubsection{First Round}
+Classically, the \s{tit for tat} strategy starts by cooperating blindly. Is this
+a good idea? What do we expect to happen in the best, average and worst cases?
+
+\subsubsection{Relation with Global Reputation}
+I suspect heavily that actuating this strategy is equivalent to simply
+maintaining our reputation equal to a global reputation which is simply the mean
+of all the reputations. The benefits of this are still up to debate.
+
 \subsection{TODO}
 \emph{What is missing?}
 
