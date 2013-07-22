@@ -443,10 +443,23 @@ deal in the next turn given the ones we have received in the previous turn.
 Classically, the \s{tit for tat} strategy starts by cooperating blindly. Is this
 a good idea? What do we expect to happen in the best, average and worst cases?
 
+In the best case, every opponent starts by collaborating. If that is so, then
+you will neither gain nor lose any points (not counting a possible m-award).
+
+In the worst case, every opponent starts by deflecting. In that case, you will
+lose $3*(P-1)$ points, which amount to $1\%$ of your starting points.
+
+In the average case, you will lose something between $[0, 1]\%$ points, which is
+not bad if we are actually going to adopt this strategy.
+
 \subsubsection{Relation with Global Reputation}
 I suspect heavily that actuating this strategy is equivalent to simply
 maintaining our reputation equal to a global reputation which is simply the mean
 of all the reputations. The benefits of this are still up to debate.
+
+UPDATE:\ The result is actually not just to chase the average reputation.. No,
+no..  Rather, it makes my reputation tend to the average number of times, in
+percentage, that we receive hunts.
 
 \subsection{TODO}
 \emph{What is missing?}
