@@ -582,8 +582,40 @@ Some of the assumptions one might formulate are the following:
   M & \dash\ & {\bfseries Tit-for-tat can be applied here too!} Niiiice! But
   what does it imply? It probably equates to maintaining your reputation equal
   to some measure of global reputation. \\
+  \midrule\
+  N & \dash\ & {\bfseries Always slack against a perpetual slacker.} He is going
+  to slack anyway, so there's no point in hunting with him. \\
+  \midrule\
+  O & \dash\ & {\bfseries Always slack against a perpetual hunter.} He is going
+  to hunt anyway, so there's no point in hunting with him. \\
   \bottomrule\
 \end{tabular}
+
+\subsection{First Strategy}
+
+This strategy makes the assumptions E, G, I, J, and the fact that enemies are
+assumed to follow assumptions N, O.
+
+Start by hunting with everyone to build up our reputation. After the first turn,
+decide upon how many times to hunt/slack according to the reputation balancing
+module. It doesn't matter against who we specifically hunt or slack, if we only
+take into consideration our own utilities. In this variation, the reputation
+balancing module would make our own reputation approach the global reputation.
+Why? Because we are assuming that gives us the best chance of the opponent
+cooperating with us (we know a too low and a too high reputation both attracts
+slackers).
+
+\subsubsection{Observations to discuss.}
+\begin{itemize}
+  \item If the opponents are assumed to always slack against perpetual hunters,
+    then is it really the best choice to always hunt in the first turn? If our
+    assumptions are true, then this will attract a lot of slackers in the
+    following turns. I suggest we start with some other percentage, like 75\% of
+    the times or something.
+  \item How should we really decide against who to hunt / slack? Hunt with the
+    people with best reputation? Or the opposite (according to assumption K)? Or
+    random?
+\end{itemize}
 
 \end{document}
 
