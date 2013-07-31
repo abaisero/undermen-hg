@@ -15,10 +15,6 @@ class BasePlayer(object):
     Base class so I don't have to repeat bookkeeping stuff.
     Do not edit unless you're working on the simulation.
     '''
-    def __init__(self):
-        self.stats = dict()
-        self.add_stats(name = self.name, food = [], rep = [])
-    
     def __str__(self):
         try:
             return self.name
@@ -35,16 +31,19 @@ class BasePlayer(object):
     def round_end(*args, **kwargs):
         pass
 
+    def init_stats():
+        self.stats = dict()
+        self.add_stats(name = self.name, food = [], rep = [])
+
     def add_stats(**kwargs):
-      for k, v in kwargs.iteritems():
-        stats[k] = v
+        for k, v in kwargs.iteritems():
+            stats[k] = v
 
     def append_stats(**kwargs):
-      for k, v in kwargs.iteritems():
-        stats[k].append(v)
+        for k, v in kwargs.iteritems():
+            stats[k].append(v)
 
     def collect_stats():
-        stats['msg'] = 'No statistics implemented for this player'
         return stats
 
 class Player(BasePlayer):
