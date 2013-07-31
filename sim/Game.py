@@ -79,7 +79,7 @@ class Game(object):
         return len(self.players)
         
     def calculate_m(self):
-            return random.randrange(1, self.P*(self.P-1))
+        return random.randrange(1, self.P*(self.P-1))
             
         
     def play_round(self):
@@ -176,4 +176,34 @@ class Game(object):
                     print ("Multiple survivors:")
                     print (survivors)
                 break
-        
+
+        mans = {
+            'exit': 'Exits simulation.',
+            'ls':   'List of player rankings.',
+            'man':  'Explanation of command.',
+            'help': 'Lists all the commands.',
+            }
+
+        print()
+        print('Welcome to the query console.')
+        print('To get started, type \'help\'.')
+        while True:
+            cmd = raw_input('>> ').split(' ')
+            for i in range(cmd.count('')):
+                cmd.remove('')
+
+            if len(cmd) == 0:
+                print('Command not found.')
+            elif cmd[0] == 'exit':
+                break;
+            elif cmd[0] == 'ls':
+                pass
+            elif cmd[0] == 'man':
+                if len(cmd) > 1 and mans.has_key(cmd[1]):
+                    print(mans[cmd[1]])
+                else:
+                    print('Usage: man [cmd]')
+            elif cmd[0] == 'help':
+                for k, v in mans.iteritems():
+                    print(k, '\t', v)
+
