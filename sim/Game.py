@@ -177,13 +177,23 @@ class Game(object):
                     print (survivors)
                 break
 
-        mans = {
-            'exit': 'Exits simulation.',
-            'ls':   'List of player rankings.',
-            'man':  'Explanation of command.',
-            'help': 'Lists all the commands.',
+        mantitles = {
+            'exit':   'Exits simulation.',
+            'ls':     'List of player rankings.',
+            'man':    'Explanation of command.',
+            'help':   'Lists all the commands.',
+            'plot':   'Plots ranks.',
+            'stats':  'Stats of a player.',
             }
-
+        manuals = {
+            'man':    'Inputs: command name.',
+            'stats':  'Inputs: player rank.',
+            }
+        usages = {
+            'man':    'Usage: man <cmd>',
+            'stats':  'Usage: stats <rank_player>'
+            }
+        
         print()
         print('Welcome to the query console.')
         print('To get started, type \'help\'.')
@@ -196,14 +206,23 @@ class Game(object):
                 print('Command not found.')
             elif cmd[0] == 'exit':
                 break;
-            elif cmd[0] == 'ls':
-                pass
             elif cmd[0] == 'man':
-                if len(cmd) > 1 and mans.has_key(cmd[1]):
-                    print(mans[cmd[1]])
+                if len(cmd) > 1 and mantitles.has_key(cmd[1]):
+                    print(mantitles[cmd[1]])
+                    if usages.has_key(cmd[1]):
+                      print(usages[cmd[1]])
+                    if manuals.has_key(cmd[1]):
+                      print()
+                      print(manuals[cmd[1]])
                 else:
-                    print('Usage: man [cmd]')
+                    print(usages['man'])
             elif cmd[0] == 'help':
-                for k, v in mans.iteritems():
+                for k, v in mantitles.iteritems():
                     print(k, '\t', v)
+            elif cmd[0] == 'ls':
+                print('NYI')
+            elif cmd[0] == 'plot':
+                print('NYI')
+            elif cmd[0] == 'stats':
+                print('NYI')
 
