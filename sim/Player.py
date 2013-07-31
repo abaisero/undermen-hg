@@ -36,12 +36,12 @@ class BasePlayer(object):
         pass
 
     def add_stats(**kwargs):
-      for k, v in kwargs.iteritems():
-        stats[k] = v
+        for k, v in kwargs.iteritems():
+            stats[k] = v
 
     def append_stats(**kwargs):
-      for k, v in kwargs.iteritems():
-        stats[k].append(v)
+        for k, v in kwargs.iteritems():
+            stats[k].append(v)
 
     def collect_stats():
         stats['msg'] = 'No statistics implemented for this player'
