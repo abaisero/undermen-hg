@@ -157,10 +157,6 @@ class Game(object):
         
         self.players = [p for p in self.players if p.food > 0]
 
-        if (self.P < 2) or (self.round > self.max_rounds):
-            for p in self.players:
-                self.ranking.insert(0, (1, self.round, p))
-        
         return (self.P < 2) or (self.round > self.max_rounds)
         
         
@@ -179,8 +175,13 @@ class Game(object):
                     print ("Everyone starved")
                 elif (len(self.players) == 1):
                     print ("The winner is: ", self.players[0].player)
+                    self.ranking.insert(0, (1, self.round, self.players[0]))
                 else:
-                    survivors = sorted(self.players, key=lambda player: player.food, reverse=True)
+                    survivors = sorted(self.players, key=lambda player: player.food)
+                    for p in survivors:
+                        self.ranking.insert(0, (1, self.round, p))
+                    survivors.reverse()
+        
                     print ("The winner is: ", survivors[0].player)
                     print ("Multiple survivors:")
                     print (survivors)
@@ -193,6 +194,7 @@ class Game(object):
             'help':   'Lists all the commands.',
             'plot':   'Plots ranks.',
             'stats':  'Stats of a player.',
+            'run':    'Reruns simulator.',
             }
         manuals = {
             'man':    'Inputs: command name.',
@@ -241,6 +243,11 @@ class Game(object):
                 print('NYI')
             elif cmd[0] == 'stats':
                 print('NYI')
+            elif cmd[0] == 'run':
+                return True
             else:
                 print('Command not found.')
+
+# False means: Do not execute this again
+        return False
 

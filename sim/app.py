@@ -6,6 +6,9 @@ from Player import Player
 # Bare minimum test game. See README.md for details.
 
 if __name__ == '__main__':
-    players = [Player(), Pushover(), Freeloader(), Alternator(), MaxRepHunter(), Random(.2), Random(.8)]
-    game = Game(players)
-    game.play_game()
+    while True:
+        players = [Pushover(), Freeloader(), Alternator(), MaxRepHunter(), Random(.2), Random(.8)]
+        game = Game(players)
+        if game.play_game():
+            continue
+        break
