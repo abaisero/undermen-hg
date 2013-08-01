@@ -225,4 +225,6 @@ class Game(object):
                 print('NYI')
             elif cmd[0] == 'stats':
                 print('NYI')
+            else:
+                print('Command not found.')
 
