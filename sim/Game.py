@@ -68,6 +68,9 @@ class Game(object):
         start_food = 300*(self.P-1)
         
         self.players = [GamePlayer(self,p,start_food) for p in players]
+
+        # Bais: Here be my prodigy
+        self.ranking = []
         
         
     @property
@@ -147,10 +150,16 @@ class Game(object):
         
     def game_over(self):        
         starved = [p for p in self.players if p.food <= 0]
+        num_starved = len(starved)
         for p in starved:
             print ("{} has starved and been eliminated in round {}".format(p.player, self.round))
+            self.ranking.insert(0, (self.P - num_starved + 1, self.round, p))
         
         self.players = [p for p in self.players if p.food > 0]
+
+        if (self.P < 2) or (self.round > self.max_rounds):
+            for p in self.players:
+                self.ranking.insert(0, (1, self.round, p))
         
         return (self.P < 2) or (self.round > self.max_rounds)
         
@@ -220,7 +229,14 @@ class Game(object):
                 for k, v in mantitles.iteritems():
                     print(k, '\t', v)
             elif cmd[0] == 'ls':
-                print('NYI')
+                print('Rank\tPlayer\t\t\tRound\tFood')
+                print('-----------------------------------------')
+                for rank, n_round, p in self.ranking:
+                  print('{0}\t{1}\t\t{2}\t{3}'
+                      .format(rank,
+                              p.player.name.ljust(10),
+                              n_round,
+                              p.food if p.food > 0 else '--- '))
             elif cmd[0] == 'plot':
                 print('NYI')
             elif cmd[0] == 'stats':
