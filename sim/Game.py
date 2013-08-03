@@ -31,7 +31,7 @@ class GamePlayer(object):
         
     @property
     def rep(self):
-        return self.hunts/self.parent.hunt_opportunities if self.parent.hunt_opportunities else 0
+        return self.hunts/self.parent.slots if self.parent.slots else 0
         
     def __repr__(self):
         return '{} {} {:.3f}'.format(self.player, self.food, self.rep)
@@ -58,20 +58,10 @@ class Game(object):
     
     See app.py for a bare-minimum test game.
     '''   
-    def __init__(self, players, verbose=True, min_rounds=300, average_rounds=1000):
+    def __init__(self, verbose=True, min_rounds=300, average_rounds=1000):
         self.verbose = verbose
-        self.max_rounds = min_rounds + int(random.expovariate(1/(average_rounds-min_rounds)))
-        self.round = 0
-        self.hunt_opportunities = 0
-        
-        self.players = players # to set self.P
-        start_food = 300*(self.P-1)
-        
-        self.players = [GamePlayer(self,p,start_food) for p in players]
-
-        # Bais: Here be my prodigy
-        self.ranking = []
-        
+        self.min_rounds = min_rounds
+        self.average_rounds = average_rounds
         
     @property
     def m_bonus(self):
@@ -84,7 +74,6 @@ class Game(object):
     def calculate_m(self):
         return random.randrange(1, self.P*(self.P-1))
             
-        
     def play_round(self):
         # Get beginning of round stats        
         self.round += 1
@@ -106,7 +95,7 @@ class Game(object):
             strategies.append(strategy)
 
         # Perform the hunts
-        self.hunt_opportunities += self.P-1
+        self.slots += self.P-1
 
         results = [[] for j in range(self.P)]
         for i in range(self.P):
@@ -135,18 +124,15 @@ class Game(object):
             player.hunts += hunts
             player.player.hunt_outcomes(result)
             player.player.round_end(bonus, m, total_hunts)
-            
     
         if self.verbose:
             newlist = sorted(self.players, key=lambda x: x.food, reverse=True)
             for p in newlist:
                 print (p)
-                   
         
         if self.game_over():            
             print ("Game Completed after {} rounds".format(self.round))
             raise StopIteration
-            
         
     def game_over(self):        
         starved = [p for p in self.players if p.food <= 0]
@@ -158,7 +144,6 @@ class Game(object):
         self.players = [p for p in self.players if p.food > 0]
 
         return (self.P < 2) or (self.round > self.max_rounds)
-        
         
     def play_game(self):
         '''
@@ -187,22 +172,40 @@ class Game(object):
                     print (survivors)
                 break
 
+    def set_players(self, players):
+        self.players_template = players
+
+    def init_game(self):
+        self.max_rounds = self.min_rounds + int(random.expovariate(1/(self.average_rounds-self.min_rounds)))
+        self.round = 0
+        self.slots = 0
+        
+        self.players = self.players_template # to initialize P
+        start_food = 300*(self.P-1)
+        self.players = [ GamePlayer(self,p,start_food)
+                        for p in self.players_template ]
+
+        # Bais: Here be my prodigy
+        self.ranking = []
+
+    def menu(self):
         mantitles = {
-            'exit':   'Exits simulation.',
-            'ls':     'List of player rankings.',
-            'man':    'Explanation of command.',
-            'help':   'Lists all the commands.',
-            'plot':   'Plots ranks.',
-            'stats':  'Stats of a player.',
-            'run':    'Reruns simulator.',
+            'exit':     'Exits simulation.',
+            'ls':       'List of player rankings.',
+            'man':      'Explanation of command.',
+            'help':     'Lists all the commands.',
+            'plot':     'Plots ranks.',
+            'stats':    'Stats of a player.',
+            'run':      'Reruns simulator.',
+            'playa':    'Lists player classes',
             }
         manuals = {
-            'man':    'Inputs: command name.',
-            'stats':  'Inputs: player rank.',
+            'man':      'Inputs: command name.',
+            'stats':    'Inputs: player rank.',
             }
         usages = {
-            'man':    'Usage: man <cmd>',
-            'stats':  'Usage: stats <rank_player>'
+            'man':      'Usage: man <cmd>',
+            'stats':    'Usage: stats <rank_player>'
             }
         
         print()
@@ -244,10 +247,11 @@ class Game(object):
             elif cmd[0] == 'stats':
                 print('NYI')
             elif cmd[0] == 'run':
-                return True
+                self.init_game()
+                self.play_game()
+            elif cmd[0] == 'playa':
+                for p in self.players_template:
+                    print(p.name)
             else:
                 print('Command not found.')
-
-# False means: Do not execute this again
-        return False
 
